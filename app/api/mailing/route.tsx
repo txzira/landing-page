@@ -35,10 +35,15 @@ export async function POST(request: Request) {
   );
   const dbRowResponse = insertMemberQuery.rows[0];
   const insertMemberSizingQuery = await PGClient.query(
-    "INSERT INTO members_sizing (hat_size,shirt_size,pants_size,footwear_size,id) VALUES ($1, $2, $3, $4,$5) RETURNING *;",
-    [formData.hat_size, formData.shirt_size, formData.pants_size, formData.footwear_size, dbRowResponse.id]
+    "INSERT INTO members_sizing (hat_size,shirt_size,pants_size,footwear_size,member) VALUES ($1, $2, $3, $4,$5) RETURNING *;",
+    [
+      formData.hat_size,
+      formData.shirt_size,
+      formData.pants_size,
+      formData.footwear_size,
+      dbRowResponse.id,
+    ]
   );
-  dbRowResponse.id;
   console.log(insertMemberQuery.rows[0]);
   console.log(insertMemberSizingQuery.rows[0]);
 

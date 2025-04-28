@@ -1,94 +1,48 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormElement from "./components/FormElement";
 import Image from "next/image";
 import { z } from "zod";
+import TermsAndConditionModal from "./components/TermsAndConditionModal";
+import ModalElement from "./components/ModalElement";
+
+const INITIAL_FORM = {
+  discord: "",
+  email: "",
+  instagram: "",
+  phone: "",
+  first_name: "",
+  middle: "",
+  last_name: "",
+  address: "",
+  address_2: "",
+  state: "",
+  city: "",
+  postal_code: "",
+  country: "",
+  hat_size: "",
+  shirt_size: "",
+  pants_size: "",
+  footwear_size: "",
+};
 
 export default function Home() {
-  const [form, setForm] = useState({
-    discord: "",
-    email: "",
-    instagram: "",
-    phone: "",
-    first_name: "",
-    middle: "",
-    last_name: "",
-    address: "",
-    address_2: "",
-    state: "",
-    city: "",
-    postal_code: "",
-    country: "",
-    hat_size: "",
-    shirt_size: "",
-    pants_size: "",
-    footwear_size: "",
-  });
-  const [formErrors, setFormErrors] = useState({
-    discord: "",
-    email: "",
-    instagram: "",
-    phone: "",
-    first_name: "",
-    middle: "",
-    last_name: "",
-    address: "",
-    address_2: "",
-    state: "",
-    city: "",
-    postal_code: "",
-    country: "",
-    hat_size: "",
-    shirt_size: "",
-    pants_size: "",
-    footwear_size: "",
-  });
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [formErrors, setFormErrors] = useState(INITIAL_FORM);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   async function SendData() {
     const formValidation = memberSchema.safeParse(form);
     console.log(formValidation);
     if (formValidation.success) {
-      setFormErrors({
-        discord: "",
-        email: "",
-        instagram: "",
-        phone: "",
-        first_name: "",
-        middle: "",
-        last_name: "",
-        address: "",
-        address_2: "",
-        state: "",
-        city: "",
-        postal_code: "",
-        country: "",
-        hat_size: "",
-        shirt_size: "",
-        pants_size: "",
-        footwear_size: "",
+      setFormErrors(INITIAL_FORM);
+      await fetch("/api/mailing", {
+        method: "POST",
+        body: JSON.stringify(form),
       });
-      await fetch("/api/mailing", { method: "POST", body: JSON.stringify(form) });
     } else {
       const errors = formValidation.error.issues;
-      const newFormErrors = {
-        discord: "",
-        email: "",
-        instagram: "",
-        phone: "",
-        first_name: "",
-        middle: "",
-        last_name: "",
-        address: "",
-        address_2: "",
-        state: "",
-        city: "",
-        postal_code: "",
-        country: "",
-        hat_size: "",
-        shirt_size: "",
-        pants_size: "",
-        footwear_size: "",
-      };
+      const newFormErrors = INITIAL_FORM;
       for (let i = 0; i < errors.length; i++) {
         const errorName = errors[i].path[0];
         console.log(errorName);
@@ -127,13 +81,20 @@ export default function Home() {
       <main className="h-full flex flex-col justify-center">
         <div className="border rounded-md p-3 h-min  w-1/3  mx-auto drop-shadow-xl/75 bg-[#2c2f33] ">
           <div className="flex flex-col items-center justify-center">
-            <div className="relative w-48 h-48 ">
-              <Image className="absolute" src="/images/logic_logo.png" alt="logo" fill={true} />
+            <div className="relative w-48 h-48 mt-5 ">
+              <Image
+                className="absolute"
+                src="/images/logic_logo.png"
+                alt="logo"
+                fill={true}
+              />
             </div>
             <div className="text-white pb-3">
               <p>
-                We&apos;re leveling up the Logic Discord experience. If you&apos;re a ultra member, drop your info below so we can keep you
-                in the loop, send exclusive gifts your way each month, and show some real appreciation for your support. Your info stays
+                We&apos;re leveling up the Logic Discord experience. If
+                you&apos;re a ultra member, drop your info below so we can keep
+                you in the loop, send exclusive gifts your way each month, and
+                show some real appreciation for your support. Your info stays
                 safe with us—strictly for member perks and community updates.
               </p>
             </div>
@@ -147,7 +108,9 @@ export default function Home() {
                 label="E-mail"
                 value={form.email}
                 error={formErrors.email}
-                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, email: event.target.value })
+                }
               />
               <div className="flex flex-row gap-3">
                 <FormElement
@@ -156,7 +119,9 @@ export default function Home() {
                   label="First Name"
                   value={form.first_name}
                   error={formErrors.first_name}
-                  onChange={(event) => setForm({ ...form, first_name: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, first_name: event.target.value })
+                  }
                 />
                 <FormElement
                   className="w-1/3"
@@ -164,7 +129,9 @@ export default function Home() {
                   label="Middle"
                   value={form.middle}
                   error={formErrors.middle}
-                  onChange={(event) => setForm({ ...form, middle: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, middle: event.target.value })
+                  }
                 />
                 <FormElement
                   className="w-1/3"
@@ -172,7 +139,9 @@ export default function Home() {
                   label="Last Name"
                   value={form.last_name}
                   error={formErrors.last_name}
-                  onChange={(event) => setForm({ ...form, last_name: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, last_name: event.target.value })
+                  }
                 />
               </div>
               <div className="flex flex-row gap-3">
@@ -181,7 +150,9 @@ export default function Home() {
                   label="Discord Name"
                   value={form.discord}
                   error={formErrors.discord}
-                  onChange={(event) => setForm({ ...form, discord: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, discord: event.target.value })
+                  }
                 />
 
                 <FormElement
@@ -189,19 +160,26 @@ export default function Home() {
                   label="Phone Number"
                   value={form.phone}
                   error={formErrors.phone}
-                  onChange={(event) => setForm({ ...form, phone: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, phone: event.target.value })
+                  }
                 />
                 <FormElement
                   required={false}
                   label="Instagram"
                   value={form.instagram}
                   error={formErrors.instagram}
-                  onChange={(event) => setForm({ ...form, instagram: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, instagram: event.target.value })
+                  }
                 />
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <h2 className="text-xl font-bold text-white"> Shipping Details</h2>
+              <h2 className="text-xl font-bold text-white">
+                {" "}
+                Shipping Details
+              </h2>
               <div className="flex flex-row gap-3">
                 <FormElement
                   className="w-2/3"
@@ -209,7 +187,9 @@ export default function Home() {
                   label="Address"
                   value={form.address}
                   error={formErrors.address}
-                  onChange={(event) => setForm({ ...form, address: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, address: event.target.value })
+                  }
                 />
                 <FormElement
                   className="w-1/3"
@@ -217,7 +197,9 @@ export default function Home() {
                   label="Address 2"
                   value={form.address_2}
                   error={formErrors.address_2}
-                  onChange={(event) => setForm({ ...form, address_2: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, address_2: event.target.value })
+                  }
                 />
               </div>
               <FormElement
@@ -225,7 +207,9 @@ export default function Home() {
                 label="Country"
                 value={form.country}
                 error={formErrors.country}
-                onChange={(event) => setForm({ ...form, country: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, country: event.target.value })
+                }
               />
               <div className="flex flex-row gap-3">
                 <FormElement
@@ -234,7 +218,9 @@ export default function Home() {
                   label="State"
                   value={form.state}
                   error={formErrors.state}
-                  onChange={(event) => setForm({ ...form, state: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, state: event.target.value })
+                  }
                 />
                 <FormElement
                   className="w-1/3"
@@ -242,7 +228,9 @@ export default function Home() {
                   label="City"
                   value={form.city}
                   error={formErrors.city}
-                  onChange={(event) => setForm({ ...form, city: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, city: event.target.value })
+                  }
                 />
                 <FormElement
                   className="w-1/3"
@@ -250,7 +238,9 @@ export default function Home() {
                   label="Postal Code"
                   value={form.postal_code}
                   error={formErrors.postal_code}
-                  onChange={(event) => setForm({ ...form, postal_code: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, postal_code: event.target.value })
+                  }
                 />
               </div>
             </div>
@@ -263,53 +253,72 @@ export default function Home() {
                 label="Hat"
                 value={form.hat_size}
                 error={formErrors.hat_size}
-                onChange={(event) => setForm({ ...form, hat_size: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, hat_size: event.target.value })
+                }
               />
               <FormElement
                 required={false}
                 label="Shirt"
                 value={form.shirt_size}
                 error={formErrors.shirt_size}
-                onChange={(event) => setForm({ ...form, shirt_size: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, shirt_size: event.target.value })
+                }
               />
               <FormElement
                 required={false}
                 label="Pants"
                 value={form.pants_size}
                 error={formErrors.pants_size}
-                onChange={(event) => setForm({ ...form, pants_size: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, pants_size: event.target.value })
+                }
               />
               <FormElement
                 required={false}
                 label="Footwear"
                 value={form.footwear_size}
                 error={formErrors.footwear_size}
-                onChange={(event) => setForm({ ...form, footwear_size: event.target.value })}
+                onChange={(event) =>
+                  setForm({ ...form, footwear_size: event.target.value })
+                }
               />
             </div>
           </div>
           <div className="mt-5 flex flex-row gap-2">
             <input type="checkbox" />
-            <label className="text-white">By checking this, I agree to receive e-mails.</label>
+            <label className="text-white">
+              By checking this, I agree to receive e-mails.
+            </label>
           </div>
           <div className=" flex flex-row gap-2">
             <input type="checkbox" />
             <label className="text-white">
               By checking this, I agree to the&nbsp;
-              <button className="underline text-blue-500 cursor-pointer">terms and condition</button>.
+              <button
+                className="underline text-blue-500 cursor-pointer"
+                onClick={() => setModalIsOpen(!modalIsOpen)}>
+                terms and condition
+              </button>
+              .
             </label>
           </div>
           <div className="w-full flex justify-center pt-4">
             <button
               className="rounded-lg  bg-white px-5 py-1 hover:inset-shadow hover:brightness-90 hover:cursor-pointer"
-              onClick={() => SendData()}
-            >
+              onClick={() => SendData()}>
               Submit
             </button>
           </div>
         </div>
       </main>
       <footer></footer>
+      {modalIsOpen ? (
+        <ModalElement onClick={() => setModalIsOpen(false)}>
+          <TermsAndConditionModal />
+        </ModalElement>
+      ) : null}
     </div>
   );
 }

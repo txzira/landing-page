@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormElement from "./components/FormElement";
 import Image from "next/image";
 import { z } from "zod";
 import TermsAndConditionModal from "./components/TermsAndConditionModal";
 import ModalElement from "./components/ModalElement";
+import toast, { Toaster } from "react-hot-toast";
 
 const INITIAL_FORM = {
   discord: "",
@@ -30,19 +31,31 @@ export default function Home() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [formErrors, setFormErrors] = useState(INITIAL_FORM);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [receiveEmails, setReceiveEmails] = useState(false);
+  const [termsAgreement, setTermsAgreement] = useState(false);
+
+  useEffect(() => {}, [formErrors]);
 
   async function SendData() {
     const formValidation = memberSchema.safeParse(form);
     console.log(formValidation);
+    if (!receiveEmails || !termsAgreement) {
+      if (!receiveEmails) toast.error("Must agree to receive e-mails.");
+      if (!termsAgreement) toast.error("Must agree to terms and conditions.");
+      return;
+    }
     if (formValidation.success) {
-      setFormErrors(INITIAL_FORM);
-      await fetch("/api/mailing", {
+      setFormErrors({ ...INITIAL_FORM });
+      const response = await fetch("/api/mailing", {
         method: "POST",
         body: JSON.stringify(form),
       });
+      const json = await response.json();
+      console.log(json);
+      toast.success("Email Confirmation");
     } else {
       const errors = formValidation.error.issues;
-      const newFormErrors = INITIAL_FORM;
+      const newFormErrors = { ...INITIAL_FORM };
       for (let i = 0; i < errors.length; i++) {
         const errorName = errors[i].path[0];
         console.log(errorName);
@@ -52,6 +65,7 @@ export default function Home() {
 
       setFormErrors(newFormErrors);
       console.log(formErrors);
+      toast.error("");
     }
     console.log("sent9");
   }
@@ -287,13 +301,21 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-5 flex flex-row gap-2">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={receiveEmails}
+              onChange={(e) => setReceiveEmails(e.target.checked)}
+            />
             <label className="text-white">
               By checking this, I agree to receive e-mails.
             </label>
           </div>
           <div className=" flex flex-row gap-2">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={termsAgreement}
+              onChange={(e) => setTermsAgreement(e.target.checked)}
+            />
             <label className="text-white">
               By checking this, I agree to the&nbsp;
               <button
@@ -314,6 +336,7 @@ export default function Home() {
         </div>
       </main>
       <footer></footer>
+      <Toaster />
       {modalIsOpen ? (
         <ModalElement onClick={() => setModalIsOpen(false)}>
           <TermsAndConditionModal />
